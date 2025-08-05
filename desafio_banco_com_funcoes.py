@@ -1,28 +1,4 @@
-MENSAGEM = """\n\n####### Bem vindo ao Banco sem nome! #######
 
-Digite para:
-[d] Deposito
-[s] Saque
-[e] Extrato
-[q] Sair
-
-opção: """
-
-saldo = 1000
-limite = 500
-extrato = ""
-numero_de_saques = 0
-
-retorno = "" 
-
-LIMITE_DE_SAQUES = 3
-
-extrato = list()
-
-usuarios = []
-contas = []
-
-opcao = ""
 
 def sacar(*, saque, saldo, limite, extrato, numero_saques, LIMITE_SAQUE):
 
@@ -60,12 +36,14 @@ def sacar(*, saque, saldo, limite, extrato, numero_saques, LIMITE_SAQUE):
 
 def depositar(saldo,valor,extrato,/):
     if valor > 0:
+        saldo += valor
+
         retorno = f"R$ {valor:.2f} foram depositados!\n"
         extrato.append(retorno)
 
         print(retorno)
 
-        return valor
+        return saldo
     else:
         print("\nDigite um valor válido")
         return 0
@@ -73,7 +51,7 @@ def depositar(saldo,valor,extrato,/):
 def exibir_extrato(saldo,/,*,extrato):
     info += [transacao for transacao in extrato]
     print(" EXTRATO ".center("#",20))
-
+    print(info)
     print("".center("#",20))
 
 def cadastro_usuario(usuarios):
@@ -82,6 +60,32 @@ def cadastro_usuario(usuarios):
 
 def cadastro_conta(usuarios,contas):
     print()
+
+MENSAGEM = """\n\n####### Bem vindo ao Banco sem nome! #######
+
+Digite para:
+[d] Deposito
+[s] Saque
+[e] Extrato
+[q] Sair
+
+opção: """
+
+saldo = 1000
+limite = 500
+extrato = ""
+numero_de_saques = 0
+
+retorno = "" 
+
+LIMITE_DE_SAQUES = 3
+
+extrato = list()
+
+usuarios = list()
+contas = list()
+
+opcao = ""
 
 while True:
     opcao = input(MENSAGEM)
@@ -96,7 +100,7 @@ while True:
         saldo, numero_de_saques = sacar(saque=saque, saldo=saldo, limite=limite, extrato=extrato, numero_saques=numero_de_saques, LIMITE_SAQUE=LIMITE_DE_SAQUES)
 
     elif opcao == "e":
-        print("e")
+        exibir_extrato(saldo,extrato=extrato)
     elif opcao == "u":
         print()
     elif opcao == "c":
