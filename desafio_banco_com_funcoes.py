@@ -60,10 +60,43 @@ def exibir_extrato(saldo,/,*,extrato):
         print("\nNenhuma transação feita até o momento.\n")
     print("".center(40,"#"))
 
+# Não adicionei verificação de números por enquanto.
+def verifica_cpf(cpf, usuarios):
+    if len(cpf) == 14:
+        cpf_len = [3,3,3,2]
+        veri_cpf = cpf.split("-").split(".")
+        if len(veri_cpf) == 4:
+            for index, value in enumerate(veri_cpf):
+                if len(value) == cpf_len[index]:
+                    continue
+                else:
+                    return False
+            if cpf not in usuarios:
+                return True
+            else:
+                print("CPF existente.")
+                return False
+    elif len(cpf) == 11:
+        if cpf not in usuarios:
+            return True
+        else:
+            print("CPF existente.")
+            return False
+    else:
+        return False
+
+# exemplo
+# usuarios = {"565656":{"nome":"joao","data_de_nascimento":"13/06/06","endereco":"logradouro, nro - bairro - cidade/sigla estado"}}
 def cadastro_usuario(usuarios):
-    # nome = input("Digite o nome do ")
+    cpf = input("Digite o CPF do usuário: ")
+
+    if verifica_cpf(cpf, usuarios):
+
+
     print()
 
+# exemplo
+# contas = {"1":{"agencia":0001,"numero_conta":"1","usuario":"565656"}}
 def cadastro_conta(usuarios,contas):
     print()
 
@@ -90,6 +123,7 @@ extrato = list()
 
 usuarios = list()
 contas = list()
+
 
 opcao = ""
 
