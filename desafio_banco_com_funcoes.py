@@ -19,10 +19,12 @@ LIMITE_DE_SAQUES = 3
 
 extrato = list()
 
+usuarios = []
+contas = []
 
-def saque(*,saldo,limite,extrato,numero_saques,LIMITE_SAQUE):
-    
-    saque = float(input("Quantia desejada para saque: "))
+opcao = ""
+
+def sacar(*, saque, saldo, limite, extrato, numero_saques, LIMITE_SAQUE):
 
     excedeu_saldo = saldo < saque
 
@@ -46,29 +48,62 @@ def saque(*,saldo,limite,extrato,numero_saques,LIMITE_SAQUE):
         numero_saques += 1
         saldo -= saque
         
-        retorno = f"R$ {saque} foram sacados!"
+        retorno = f"R$ {saque:.2f} foram sacados!\n"
         extrato.append(retorno)
         
         print(retorno)
 
         return saldo, numero_saques
     else:
-        print("Digite um valor valido")
+        print("Digite um valor válido")
         return saldo, numero_saques
-def deposito():
+
+def depositar(saldo,valor,extrato,/):
+    if valor > 0:
+        retorno = f"R$ {valor:.2f} foram depositados!\n"
+        extrato.append(retorno)
+
+        print(retorno)
+
+        return valor
+    else:
+        print("\nDigite um valor válido")
+        return 0
+
+def exibir_extrato(saldo,/,*,extrato):
+    info += [transacao for transacao in extrato]
+    print(" EXTRATO ".center("#",20))
+
+    print("".center("#",20))
+
+def cadastro_usuario(usuarios):
+    # nome = input("Digite o nome do ")
     print()
 
-def exibir_extrato():
+def cadastro_conta(usuarios,contas):
     print()
 
-def cadastro_usuario():
-    print()
+while True:
+    opcao = input(MENSAGEM)
 
-def cadastro_conta():
-    print()
-while numero_de_saques < 3:
-    saldo, numero_de_saques = saque(saldo=saldo,limite=limite,extrato=extrato,numero_saques=numero_de_saques,LIMITE_SAQUE=LIMITE_DE_SAQUES)
+    if opcao == "d":
+        valor = float(input("Quantia desejada para deposito: "))
+        saldo += depositar(saldo,valor,extrato)
 
-print()
+    elif opcao == "s": 
+        saque = float(input("Quantia desejada para saque: "))
+        # Talvez tenha mudanças por causa da criação de conta, talvez condensar as informações em um dict na conta pra não precisar de tanto parâmetro
+        saldo, numero_de_saques = sacar(saque=saque, saldo=saldo, limite=limite, extrato=extrato, numero_saques=numero_de_saques, LIMITE_SAQUE=LIMITE_DE_SAQUES)
 
-print(extrato)
+    elif opcao == "e":
+        print("e")
+    elif opcao == "u":
+        print()
+    elif opcao == "c":
+        print()
+    elif opcao == "q":
+        print("\nObrigado por usar nossos serviços!")
+        break
+    else:
+        print("\nDigite uma opção válida!")
+    
