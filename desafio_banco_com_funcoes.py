@@ -6,7 +6,7 @@ def sacar(*, saque, saldo, limite, extrato, numero_saques, LIMITE_SAQUE):
 
     excedeu_limite = limite < saque
 
-    excedeu_saque = numero_saques > LIMITE_SAQUE
+    excedeu_saque = numero_saques >= LIMITE_SAQUE
 
     if excedeu_saldo:
         print("Não foi possível fazer a transação! O valor inserido ultrapassa o saldo atual.")
@@ -49,10 +49,16 @@ def depositar(saldo,valor,extrato,/):
         return 0
 
 def exibir_extrato(saldo,/,*,extrato):
-    info += [transacao for transacao in extrato]
-    print(" EXTRATO ".center("#",20))
-    print(info)
-    print("".center("#",20))
+    print("\n")
+    print(" EXTRATO ".center(40,"#"))
+    if len(extrato) != 0:
+        print()
+        for transacao in extrato:
+            print(transacao)
+        print(f"Saldo atual da conta: {saldo}\n")
+    else:
+        print("\nNenhuma transação feita até o momento.\n")
+    print("".center(40,"#"))
 
 def cadastro_usuario(usuarios):
     # nome = input("Digite o nome do ")
@@ -71,7 +77,7 @@ Digite para:
 
 opção: """
 
-saldo = 1000
+saldo = 0
 limite = 500
 extrato = ""
 numero_de_saques = 0
