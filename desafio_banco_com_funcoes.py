@@ -85,18 +85,38 @@ def verifica_cpf(cpf, usuarios):
     else:
         return False
 
+def verifica_data(data_de_nascimento):
+    if len(data_de_nascimento.split("/")) == 3:
+            padrao = [31,12,2050]
+            for index,data in enumerate(data_de_nascimento.split("/")):
+                if int(data) > 0 and data <= padrao[index]:
+                    continue
+                else:
+                    return False
+            return True
 # exemplo
-# usuarios = {"565656":{"nome":"joao","data_de_nascimento":"13/06/06","endereco":"logradouro, nro - bairro - cidade/sigla estado"}}
+# usuarios = {"56565656565":{"nome":"joao","data_de_nascimento":"13/06/2006","endereco":"logradouro, nro - bairro - cidade/sigla estado"}}
 def cadastro_usuario(usuarios):
     cpf = input("Digite o CPF do usuário: ")
 
     if verifica_cpf(cpf, usuarios):
+        nome = input("Digite o nome de usuário [Nome Sobrenome]: ")
 
+        data_de_nascimento = input("Digite o nome de usuário [i.e: 10/04/2000]: ")
 
-    print()
+        if verifica_data(data_de_nascimento):
+            endereco = input("Digite o nome de usuário [i.e: Rua exemplo, 09 - vila das torres - SC]: ")
 
+            usuario = {"nome":nome,"data de nascimento":data_de_nascimento,"endereço":endereco}
+
+            print(f"Usuário {nome} criado com sucesso!")
+            usuarios[cpf] = usuario
+        else:
+            print("Operação falhou! Digite uma data de nascimento válida.")
+    else:
+        print("Operação falhou! Digite um CPF válido.")
 # exemplo
-# contas = {"1":{"agencia":0001,"numero_conta":"1","usuario":"565656"}}
+# contas = {1:{"agencia":0001,"numero_conta":"1","usuario":"565656"}}
 def cadastro_conta(usuarios,contas):
     print()
 
@@ -106,7 +126,7 @@ Digite para:
 [d] Deposito
 [s] Saque
 [e] Extrato
-[q] Sair
+[q] Sair da conta
 
 opção: """
 
@@ -122,8 +142,9 @@ LIMITE_DE_SAQUES = 3
 extrato = list()
 
 usuarios = list()
-contas = list()
 
+contas = list()
+count_contas = 1
 
 opcao = ""
 
