@@ -94,8 +94,15 @@ def verifica_data(data_de_nascimento):
                 else:
                     return False
             return True
-# exemplo
-# usuarios = {"56565656565":{"nome":"joao","data_de_nascimento":"13/06/2006","endereco":"logradouro, nro - bairro - cidade/sigla estado"}}
+
+# exemplo usuário
+# usuarios = {
+# "56565656565":{
+#   "nome":"joao",
+#   "data_de_nascimento":"13/06/2006",
+#   "endereco":"logradouro, nro - bairro - cidade/sigla estado"
+#   }
+# }
 def cadastro_usuario(usuarios):
     cpf = input("Digite o CPF do usuário: ")
 
@@ -107,7 +114,11 @@ def cadastro_usuario(usuarios):
         if verifica_data(data_de_nascimento):
             endereco = input("Digite o nome de usuário [i.e: Rua exemplo, 09 - vila das torres - SC]: ")
 
-            usuario = {"nome":nome,"data de nascimento":data_de_nascimento,"endereço":endereco}
+            usuario = {
+                "nome":nome,
+                "data de nascimento":data_de_nascimento,
+                "endereço":endereco
+                }
 
             print(f"Usuário {nome} criado com sucesso!")
             usuarios[cpf] = usuario
@@ -115,12 +126,53 @@ def cadastro_usuario(usuarios):
             print("Operação falhou! Digite uma data de nascimento válida.")
     else:
         print("Operação falhou! Digite um CPF válido.")
-# exemplo
-# contas = {1:{"agencia":0001,"numero_conta":"1","usuario":"565656"}}
-def cadastro_conta(usuarios,contas):
-    print()
 
-MENSAGEM = """\n\n####### Bem vindo ao Banco sem nome! #######
+# exemplo conta
+# contas = {
+# 1:{
+#   "agencia":0001,
+#   "numero_conta":"1",
+#   "usuario":"565656",
+#   "dados":{
+#       "saldo":0,
+#       "limite":500,
+#       "extrato":"",
+#       "quantidade_saques":0,
+#       "LIMITE_SAQUES":3,
+#       }
+#   }
+# }
+def cadastro_conta(usuarios,contas,contador):
+    cpf = input("Digite o CPF do ususário ao qual a conta será cadastrada: ")
+
+    if verifica_cpf(cpf,usuarios):
+        contas[contador] = {
+            "usuario": cpf,
+            "agencia": "0001",
+            "dados": {
+                "saldo": 0,
+                "limite": 500,
+                "extrato": "",
+                "quantidade_saques": 0,
+                "LIMITE_SAQUES": 3
+            }
+        }
+        print("Conta cadastrada com sucesso")
+        return contador+1
+    else:
+        print("Operação falhou! Não foi possível encontrar o usuário.")
+
+
+MENSAGEM_USUARIO = """\n\n####### Bem vindo ao Banco sem nome! #######
+
+Digite para:
+[s] Casdastrar usuário
+[c] Cadastrar conta
+[e] Entrar
+[q] Sair
+"""
+
+MENSAGEM_CONTA = """\n\n
 
 Digite para:
 [d] Deposito
