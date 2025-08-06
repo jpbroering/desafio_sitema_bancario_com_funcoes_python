@@ -201,7 +201,7 @@ count_contas = 1
 opcao = ""
 
 while True:
-    opcao = input(MENSAGEM)
+    opcao = input(MENSAGEM_CONTA)
 
     if opcao == "d":
         valor = float(input("Quantia desejada para deposito: "))
