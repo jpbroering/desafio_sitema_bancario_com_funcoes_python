@@ -3,32 +3,24 @@
 def sacar(*, saque, saldo, limite, extrato, numero_saques, LIMITE_SAQUE):
 
     excedeu_saldo = saldo < saque
-
     excedeu_limite = limite < saque
-
     excedeu_saque = numero_saques >= LIMITE_SAQUE
 
     if excedeu_saldo:
         print("Não foi possível fazer a transação! O valor inserido ultrapassa o saldo atual.")
         return saldo, numero_saques
-
     elif excedeu_limite:
         print("Não foi possível fazer a transação! O valor inserido ultrapassa o limite da conta.")
         return saldo, numero_saques
-    
     elif excedeu_saque:
         print("Não foi possível fazer a transação! O limite de saques diários foi alcançado.")
         return saldo, numero_saques
-    
     elif saque > 0:
         numero_saques += 1
         saldo -= saque
-        
         retorno = f"R$ {saque:.2f} foram sacados!\n"
         extrato.append(retorno)
-        
         print(retorno)
-
         return saldo, numero_saques
     else:
         print("Digite um valor válido")
@@ -37,12 +29,9 @@ def sacar(*, saque, saldo, limite, extrato, numero_saques, LIMITE_SAQUE):
 def depositar(saldo,valor,extrato,/):
     if valor > 0:
         saldo += valor
-
         retorno = f"R$ {valor:.2f} foram depositados!\n"
         extrato.append(retorno)
-
         print(retorno)
-
         return saldo
     else:
         print("\nDigite um valor válido")
@@ -91,7 +80,7 @@ def verifica_data(data_de_nascimento):
     if len(data_de_nascimento.split("/")) == 3:
             padrao = [31,12,2050]
             for index,data in enumerate(data_de_nascimento.split("/")):
-                if int(data) > 0 and data <= padrao[index]:
+                if int(data) > 0 and int(data) <= padrao[index]:
                     continue
                 else:
                     return False
@@ -117,13 +106,14 @@ def cadastro_usuario(usuarios):
             endereco = input("Digite o nome de usuário [i.e: Rua exemplo, 09 - vila das torres - SC]: ")
 
             usuario = {
+                "CPF": cpf,
                 "nome":nome,
                 "data de nascimento":data_de_nascimento,
                 "endereço":endereco
                 }
 
             print(f"Usuário {nome} criado com sucesso!")
-            usuarios[cpf] = usuario
+            usuarios.append({usuario})
         else:
             print("Operação falhou! Digite uma data de nascimento válida.")
     else:
@@ -131,7 +121,7 @@ def cadastro_usuario(usuarios):
 
 # exemplo conta
 # contas = {
-# 1:{
+#   "número": 1,
 #   "agencia":"0001",
 #   "usuario":"565656",
 #   "dados":{
@@ -147,7 +137,8 @@ def cadastro_conta(usuarios,contas,contador):
     cpf = input("Digite o CPF do ususário ao qual a conta será cadastrada: ")
 
     if verifica_cpf(cpf,usuarios,procura=True):
-        contas[contador] = {
+        contas.append({
+            "numero_conta": contador,
             "usuario": cpf,
             "agencia": "0001",
             "dados": {
@@ -157,7 +148,7 @@ def cadastro_conta(usuarios,contas,contador):
                 "quantidade_saques": 0,
                 "LIMITE_SAQUES": 3
             }
-        }
+        })
         print("Conta cadastrada com sucesso")
         return contador+1
     else:
@@ -191,7 +182,8 @@ Digite para:
 [c] Cadastrar conta
 [e] Entrar
 [q] Sair
-"""
+
+opção: """
 
 MENSAGEM_CONTA = """\n\n
 
@@ -214,14 +206,14 @@ LIMITE_DE_SAQUES = 3
 
 extrato = list()
 
-usuarios = list()
+usuarios = dict()
 
-contas = list()
+contas = dict()
 count_contas = 1
 
 opcao = ""
 
-def init_tela_inicial():
+def init_tela_inicial(contas, usuarios, count_contas):
     while True:
         opcao = input(MENSAGEM_USUARIO)
 
@@ -262,3 +254,5 @@ def init_sistema_bancario(contas,conta):
             return
         else:
             print("\nDigite uma opção válida!")
+
+init_tela_inicial(contas, usuarios, count_contas)
