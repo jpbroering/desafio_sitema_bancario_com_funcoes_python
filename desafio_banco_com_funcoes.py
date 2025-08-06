@@ -61,7 +61,7 @@ def exibir_extrato(saldo,/,*,extrato):
     print("".center(40,"#"))
 
 # Não adicionei verificação de números por enquanto.
-def verifica_cpf(cpf, usuarios):
+def verifica_cpf(cpf, usuarios,/,*,procura):
     if len(cpf) == 14:
         cpf_len = [3,3,3,2]
         veri_cpf = cpf.split("-").split(".")
@@ -71,7 +71,9 @@ def verifica_cpf(cpf, usuarios):
                     continue
                 else:
                     return False
-            if cpf not in usuarios:
+            if cpf not in usuarios and procura == False:
+                return True
+            elif cpf in usuarios and procura:
                 return True
             else:
                 print("CPF existente.")
@@ -106,7 +108,7 @@ def verifica_data(data_de_nascimento):
 def cadastro_usuario(usuarios):
     cpf = input("Digite o CPF do usuário: ")
 
-    if verifica_cpf(cpf, usuarios):
+    if verifica_cpf(cpf, usuarios, procura=False):
         nome = input("Digite o nome de usuário [Nome Sobrenome]: ")
 
         data_de_nascimento = input("Digite o nome de usuário [i.e: 10/04/2000]: ")
@@ -130,8 +132,7 @@ def cadastro_usuario(usuarios):
 # exemplo conta
 # contas = {
 # 1:{
-#   "agencia":0001,
-#   "numero_conta":"1",
+#   "agencia":"0001",
 #   "usuario":"565656",
 #   "dados":{
 #       "saldo":0,
@@ -145,7 +146,7 @@ def cadastro_usuario(usuarios):
 def cadastro_conta(usuarios,contas,contador):
     cpf = input("Digite o CPF do ususário ao qual a conta será cadastrada: ")
 
-    if verifica_cpf(cpf,usuarios):
+    if verifica_cpf(cpf,usuarios,procura=True):
         contas[contador] = {
             "usuario": cpf,
             "agencia": "0001",
@@ -162,6 +163,26 @@ def cadastro_conta(usuarios,contas,contador):
     else:
         print("Operação falhou! Não foi possível encontrar o usuário.")
 
+# retorna o sistema bancário se a conta existir
+def logar(contas,usuarios):
+    numero = input("Dgite o número da conta a qual deseja logar: ")
+
+    if numero in contas:
+        print("Conta encontrada!")
+        cpf = input(f"Para confirmar a conta digite o CPF da conta {numero}: ")
+
+        if verifica_cpf(cpf,usuarios,procura=True):
+            if cpf in contas[numero].values():
+                return init_sistema_bancario(contas,(numero,contas[numero],))
+            
+            else:
+                print("Operação inválida! CPF não condiz com o da conta.")
+
+        else:
+            print("Operação inválida! CPF formatado incorretamente. (I.E: 123.123.123-32 ou 12312312332)")
+
+    else:
+        print("Operação inválida! Número não encontrado.")
 
 MENSAGEM_USUARIO = """\n\n####### Bem vindo ao Banco sem nome! #######
 
@@ -200,27 +221,44 @@ count_contas = 1
 
 opcao = ""
 
-while True:
-    opcao = input(MENSAGEM_CONTA)
+def init_tela_inicial():
+    while True:
+        opcao = input(MENSAGEM_USUARIO)
 
-    if opcao == "d":
-        valor = float(input("Quantia desejada para deposito: "))
-        saldo += depositar(saldo,valor,extrato)
+        if opcao == "s":
+            cadastro_usuario(usuarios)
 
-    elif opcao == "s": 
-        saque = float(input("Quantia desejada para saque: "))
-        # Talvez tenha mudanças por causa da criação de conta, talvez condensar as informações em um dict na conta pra não precisar de tanto parâmetro
-        saldo, numero_de_saques = sacar(saque=saque, saldo=saldo, limite=limite, extrato=extrato, numero_saques=numero_de_saques, LIMITE_SAQUE=LIMITE_DE_SAQUES)
+        elif opcao == "c":
+            count_contas = cadastro_conta(usuarios,contas,count_contas)
 
-    elif opcao == "e":
-        exibir_extrato(saldo,extrato=extrato)
-    elif opcao == "u":
-        print()
-    elif opcao == "c":
-        print()
-    elif opcao == "q":
-        print("\nObrigado por usar nossos serviços!")
-        break
-    else:
-        print("\nDigite uma opção válida!")
-    
+        elif opcao == "e":
+            logar(contas,usuarios)
+
+        elif opcao == "q":
+            print("Obrigado por usar nosso sistema!")
+            return
+        
+        else:
+            print("Digite uma opção válida!")
+
+def init_sistema_bancario(contas,conta):
+    while True:
+        opcao = input(MENSAGEM_CONTA)
+
+        if opcao == "d":
+            valor = float(input("Quantia desejada para deposito: "))
+            saldo += depositar(saldo,valor,extrato)
+
+        elif opcao == "s": 
+            saque = float(input("Quantia desejada para saque: "))
+            # Talvez tenha mudanças por causa da criação de conta, talvez condensar as informações em um dict na conta pra não precisar de tanto parâmetro
+            saldo, numero_de_saques = sacar(saque=saque, *conta)
+
+        elif opcao == "e":
+            exibir_extrato(saldo,extrato=extrato)
+
+        elif opcao == "q":
+            print("\nObrigado por usar nossos serviços!")
+            return
+        else:
+            print("\nDigite uma opção válida!")
