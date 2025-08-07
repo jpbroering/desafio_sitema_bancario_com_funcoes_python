@@ -49,193 +49,87 @@ def exibir_extrato(saldo,/,*,extrato):
         print("\nNenhuma transação feita até o momento.\n")
     print("".center(40,"#"))
 
-# Não adicionei verificação de números por enquanto.
-def verifica_cpf(cpf, usuarios,/,*,procura):
-    if len(cpf) == 14:
-        cpf_len = [3,3,3,2]
-        veri_cpf = cpf.split("-").split(".")
-        if len(veri_cpf) == 4:
-            for index, value in enumerate(veri_cpf):
-                if len(value) == cpf_len[index]:
-                    continue
-                else:
-                    return False
-            if cpf not in usuarios and procura == False:
-                return True
-            elif cpf in usuarios and procura:
-                return True
-            else:
-                print("CPF existente.")
-                return False
-    elif len(cpf) == 11:
-        if cpf not in usuarios:
-            return True
-        else:
-            print("CPF existente.")
-            return False
-    else:
-        return False
+def verifica_cpf(cpf, usuarios):
+    usuarios_filtrados = [usuario for usuario in usuarios if usuario["CPF"] == cpf]
+    return usuarios_filtrados[0] if usuarios_filtrados else None
 
-def verifica_data(data_de_nascimento):
-    if len(data_de_nascimento.split("/")) == 3:
-            padrao = [31,12,2050]
-            for index,data in enumerate(data_de_nascimento.split("/")):
-                if int(data) > 0 and int(data) <= padrao[index]:
-                    continue
-                else:
-                    return False
-            return True
-
-# exemplo usuário
-# usuarios = {
-# "56565656565":{
-#   "nome":"joao",
-#   "data_de_nascimento":"13/06/2006",
-#   "endereco":"logradouro, nro - bairro - cidade/sigla estado"
-#   }
-# }
 def cadastro_usuario(usuarios):
     cpf = input("Digite o CPF do usuário: ")
 
-    if verifica_cpf(cpf, usuarios, procura=False):
-        nome = input("Digite o nome de usuário [Nome Sobrenome]: ")
+    if verifica_cpf(cpf, usuarios):
+        print("Operação falhou! CPF em uso.")
+        return
 
-        data_de_nascimento = input("Digite o nome de usuário [i.e: 10/04/2000]: ")
+    nome = input("Digite o nome de usuário [i.e: Nome Sobrenome]: ")
+    data_de_nascimento = input("Digite o nome de usuário [i.e: dd/mm/aaaa]: ")
+    endereco = input("Digite o nome de usuário [i.e: logradouto, N - bairro - cidade/sigla do estado]: ")
+    usuario = {
+        "CPF": cpf,
+        "nome":nome,
+        "data de nascimento":data_de_nascimento,
+        "endereço":endereco
+        }
 
-        if verifica_data(data_de_nascimento):
-            endereco = input("Digite o nome de usuário [i.e: Rua exemplo, 09 - vila das torres - SC]: ")
+    print(f"Usuário {nome} criado com sucesso!")
+    usuarios.append(usuario)
 
-            usuario = {
-                "CPF": cpf,
-                "nome":nome,
-                "data de nascimento":data_de_nascimento,
-                "endereço":endereco
-                }
 
-            print(f"Usuário {nome} criado com sucesso!")
-            usuarios.append({usuario})
-        else:
-            print("Operação falhou! Digite uma data de nascimento válida.")
-    else:
-        print("Operação falhou! Digite um CPF válido.")
 
-# exemplo conta
-# contas = {
-#   "número": 1,
-#   "agencia":"0001",
-#   "usuario":"565656",
-#   "dados":{
-#       "saldo":0,
-#       "limite":500,
-#       "extrato":"",
-#       "quantidade_saques":0,
-#       "LIMITE_SAQUES":3,
-#       }
-#   }
-# }
-def cadastro_conta(usuarios,contas,contador):
+
+def cadastro_conta(usuarios,contas):
     cpf = input("Digite o CPF do ususário ao qual a conta será cadastrada: ")
 
-    if verifica_cpf(cpf,usuarios,procura=True):
-        contas.append({
-            "numero_conta": contador,
-            "usuario": cpf,
-            "agencia": "0001",
-            "dados": {
-                "saldo": 0,
-                "limite": 500,
-                "extrato": "",
-                "quantidade_saques": 0,
-                "LIMITE_SAQUES": 3
-            }
-        })
-        print("Conta cadastrada com sucesso")
-        return contador+1
-    else:
+    contador = len(contas)+1
+
+    if verifica_cpf(cpf,usuarios) == None:
         print("Operação falhou! Não foi possível encontrar o usuário.")
+        return contador
+    
+    contas.append({
+        "conta": contador,
+        "usuario": cpf,
+        "agencia": "0001",
+    })
+    print("Conta cadastrada com sucesso!")
 
-# retorna o sistema bancário se a conta existir
-def logar(contas,usuarios):
-    numero = input("Dgite o número da conta a qual deseja logar: ")
+def exibir_conta(contas):
+    corpo = ""
+    for conta in contas:
+        for chave,valor in conta.items():
+            corpo += f"{chave}: {valor}\n"
+        corpo += "\n "
 
-    if numero in contas:
-        print("Conta encontrada!")
-        cpf = input(f"Para confirmar a conta digite o CPF da conta {numero}: ")
+    print(" LISTAR ".center(40,"#"))
+    print("\n",corpo,end="")
+    print("".center(40,"#"))
 
-        if verifica_cpf(cpf,usuarios,procura=True):
-            if cpf in contas[numero].values():
-                return init_sistema_bancario(contas,(numero,contas[numero],))
-            
-            else:
-                print("Operação inválida! CPF não condiz com o da conta.")
+def main():
 
-        else:
-            print("Operação inválida! CPF formatado incorretamente. (I.E: 123.123.123-32 ou 12312312332)")
+    LIMITE_DE_SAQUES = 3
+    MENSAGEM = """\n\n####### Bem vindo ao Banco sem nome! #######
 
-    else:
-        print("Operação inválida! Número não encontrado.")
+    Digite para:
+    [d] Deposito
+    [s] Saque
+    [e] Extrato
+    [rs] Registrar usuário
+    [rc] Registra conta
+    [ec] Exibir contas
+    [q] Sair
 
-MENSAGEM_USUARIO = """\n\n####### Bem vindo ao Banco sem nome! #######
+    opção: """
 
-Digite para:
-[s] Casdastrar usuário
-[c] Cadastrar conta
-[e] Entrar
-[q] Sair
+    saldo = 0
+    limite = 500
+    extrato = ""
+    numero_de_saques = 0
+    extrato = []
+    usuarios = []
+    contas = []
 
-opção: """
 
-MENSAGEM_CONTA = """\n\n
-
-Digite para:
-[d] Deposito
-[s] Saque
-[e] Extrato
-[q] Sair da conta
-
-opção: """
-
-saldo = 0
-limite = 500
-extrato = ""
-numero_de_saques = 0
-
-retorno = "" 
-
-LIMITE_DE_SAQUES = 3
-
-extrato = list()
-
-usuarios = dict()
-
-contas = dict()
-count_contas = 1
-
-opcao = ""
-
-def init_tela_inicial(contas, usuarios, count_contas):
     while True:
-        opcao = input(MENSAGEM_USUARIO)
-
-        if opcao == "s":
-            cadastro_usuario(usuarios)
-
-        elif opcao == "c":
-            count_contas = cadastro_conta(usuarios,contas,count_contas)
-
-        elif opcao == "e":
-            logar(contas,usuarios)
-
-        elif opcao == "q":
-            print("Obrigado por usar nosso sistema!")
-            return
-        
-        else:
-            print("Digite uma opção válida!")
-
-def init_sistema_bancario(contas,conta):
-    while True:
-        opcao = input(MENSAGEM_CONTA)
+        opcao = input(MENSAGEM)
 
         if opcao == "d":
             valor = float(input("Quantia desejada para deposito: "))
@@ -243,16 +137,26 @@ def init_sistema_bancario(contas,conta):
 
         elif opcao == "s": 
             saque = float(input("Quantia desejada para saque: "))
-            # Talvez tenha mudanças por causa da criação de conta, talvez condensar as informações em um dict na conta pra não precisar de tanto parâmetro
-            saldo, numero_de_saques = sacar(saque=saque, *conta)
+            saldo, numero_de_saques = sacar(saque=saque, saldo=saldo, limite=limite, extrato=extrato, numero_saques=numero_de_saques, LIMITE_SAQUE=LIMITE_DE_SAQUES)
 
         elif opcao == "e":
             exibir_extrato(saldo,extrato=extrato)
+
+        elif opcao == "rs":
+            cadastro_usuario(usuarios)
+
+        elif opcao == "rc":
+            cadastro_conta(usuarios,contas)
+
+        elif opcao == "ec":
+            exibir_conta(contas)
 
         elif opcao == "q":
             print("\nObrigado por usar nossos serviços!")
             return
         else:
             print("\nDigite uma opção válida!")
+        # Para dar tempo para o usuário ler:
+        input("Digite qualquer digito para continuar.")
 
-init_tela_inicial(contas, usuarios, count_contas)
+main()
